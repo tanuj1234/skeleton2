@@ -2,8 +2,38 @@
 <html>
 
 <head>
-    <script data-require="jquery@*" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script data-require="jquery@*" data-semver="3.1.1"
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <style>
+
+        #container {
+            border: 1px solid brown;
+        }
+
+        H1 {
+            float: left;
+        }
+
+        .button {
+            background-color: #55A;
+            border: 1px solid #229;
+            width: 100px;
+            float: right;
+            font-size: 2em;
+            color: white;
+            text-align: center;
+        }
+
+        #receiptList {
+            border: 1px solid green;
+            clear: both;
+        }
+
+        .receipt {
+            background-color: #eee;
+            margin-bottom: 5px;
+        }
+
         body {
             text-align: center;
         }
@@ -23,6 +53,21 @@
         }
     </style>
     <script>
+        // This is the idiomatic way to ensure that JQuery does not
+        // execute until the page has loaded
+        $(function () {
+            const api = ""; // <- do not need a root api URL if this page is served directly by the API
+
+            $.getJSON(api + "/receipts", function (receipts) {
+                for (var i = 0; i < receipts.length; i++) {
+                    var receipt = receipts[i];
+                    $(`<div class="receipt">${receipt.merchantName}<div><span class="receiptTag">t1</span></div></div>`)
+                        .appendTo($("#receiptList"));
+                }
+
+            })
+        })
+
         let imageCapture;
         let track;
 
@@ -37,47 +82,56 @@
         function startVideo() {
             navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: "environment"}}})
                 .then(attachMediaStream)
-                .catch(error => {
-                    navigator.mediaDevices.getUserMedia({video: true})
-                        .then(attachMediaStream)
-                        .catch(error => {
-                            console.log('you are fooked');
-                        })
-                })
+                .catch(error = > {
+                navigator.mediaDevices.getUserMedia({video: true})
+                .then(attachMediaStream)
+                .catch(error = > {
+                console.log('you are fooked');
+        })
+        })
         }
 
         function takeSnapshot() {
             // create a CANVAS element that is same size as the image
             imageCapture.grabFrame()
-            .then(img => {
+                .then(img = > {
                 const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
+            canvas.width = img.width;
+            canvas.height = img.height;
 
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                const base64EncodedImageData = canvas.toDataURL('image/png').split(',')[1];
-                $.ajax({
-                    url: "/images",
-                    type: "POST",
-                    data: base64EncodedImageData,
-                    contentType: "text/plain",
-                    success: function() {},
-               })
-                .then(response => {
-                    $('video').after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
-                })
-                .always(() => console.log('request complete'));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            const base64EncodedImageData = canvas.toDataURL('image/png').split(',')[1];
+            $.ajax({
+                url: "/images",
+                type: "POST",
+                data: base64EncodedImageData,
+                contentType: "text/plain",
+                success: function () {
+                },
+            })
+                .then(response = > {
+                $('video'
+        ).
+            after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
+        })
+        .
+            always(() = > console.log('request complete')
+        )
+            ;
 
-                // For debugging, you can uncomment this to see the frame that was captured
-                // $('BODY').append(canvas);
-            });
+            // For debugging, you can uncomment this to see the frame that was captured
+            // $('BODY').append(canvas);
+        })
+            ;
 
         }
 
 
         $(function () {
             $('#start').on('click', startVideo);
-            $('video').on('play', () => $('#snapshot').prop('disabled', false));
+            $('video').on('play', () = > $('#snapshot').prop('disabled', false)
+        )
+            ;
             $('#snapshot').on('click', takeSnapshot);
         });
     </script>
@@ -89,7 +143,13 @@
 <br>
 <div id="vidwrap">
     <video autoplay></video>
+</div>
+<DIV id="container">
+    <h1>My receipts</h1>
+    <div class="button">+</div>
+    <div id="receiptList">
     </div>
+</DIV>
 </body>
 
 </html>
