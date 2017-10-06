@@ -2,26 +2,61 @@
 <html>
 
 <head>
+    <!--<link rel="stylesheet" href="style.css" /> -->
     <script data-require="jquery@*" data-semver="3.1.1"
             src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <style>
-
         #container {
-            border: 1px solid brown;
+            width: 70%;
         }
 
-        H1 {
+        h1 {
             float: left;
+
+        }
+
+        .receipt {
+            display: table-row;
+        }
+
+        .setclass {
+            display: table-cell;
+            border-bottom: 1px solid darkred;
         }
 
         .button {
-            background-color: #55A;
-            border: 1px solid #229;
+            background-color: #3498db;
+            background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+            background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+            background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+            background-image: -o-linear-gradient(top, #3498db, #2980b9);
+            background-image: linear-gradient(to bottom, #3498db, #2980b9);
+            -webkit-border-radius: 31;
+            -moz-border-radius: 31;
+            border-radius: 31px;
+            text-shadow: 4px 2px 0px #666666;
+            -webkit-box-shadow: 6px 5px 6px #666666;
+            -moz-box-shadow: 6px 5px 6px #666666;
+            box-shadow: 6px 5px 6px #666666;
+            font-family: Arial;
+            color: #ffffff;
+            font-size: 32px;
+            padding: 10px 20px 10px 20px;
+            text-decoration: none;
             width: 100px;
             float: right;
-            font-size: 2em;
-            color: white;
             text-align: center;
+
+        }
+
+        .button:hover {
+            background: #3cb0fd;
+            background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+            text-decoration: none;
         }
 
         #receiptList {
@@ -29,45 +64,76 @@
             clear: both;
         }
 
-        .receipt {
-            background-color: #eee;
-            margin-bottom: 5px;
+        .receipt-entry {
+            display: none;
         }
 
-        body {
-            text-align: center;
+        #receiptList {
+            width: 80%;
+            display: table;
         }
 
-        video {
-            width: 550px;
-            height: 450px;
-            border: 1px solid black;
+        #receiptListHeader {
+            display: table-header-group;
+            background-color: deepskyblue;
+            font-weight: bold;
+            font-size: 25px;
+            font-family: "Calibri Light";
         }
 
-        #vidwrap {
-            margin: 20px 0;
+        .mystyle {
+            /*display: table-cell;
+            padding: 10px;
+            text-align: justify;
+            border-bottom: 1px solid black;*/
+            background: orangered;
+            display: table-cell;
+            vertical-align: middle;
+            -webkit-transform: perspective(1px) translateZ(0);
+            transform: perspective(1px) translateZ(0);
+            box-shadow: 0 0 1px transparent;
+            overflow: hidden;
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-property: color, background-color;
+            transition-property: color, background-color;
         }
 
-        #start, #snapshot {
-            height: 3em;
+        .mystyle:hover, .mystyle:focus, .mystyle:active {
+            background-color: #2098D1;
+            color: white;
         }
+
+        .btn {
+            display: table-cell;
+            background: #0dfa3c;
+            background-image: -webkit-linear-gradient(top, #0dfa3c, #2bb840);
+            background-image: -moz-linear-gradient(top, #0dfa3c, #2bb840);
+            background-image: -ms-linear-gradient(top, #0dfa3c, #2bb840);
+            background-image: -o-linear-gradient(top, #0dfa3c, #2bb840);
+            background-image: linear-gradient(to bottom, #0dfa3c, #2bb840);
+            -webkit-border-radius: 10;
+            -moz-border-radius: 10;
+            border-radius: 10px;
+            font-family: Arial;
+            color: #ffffff;
+            font-size: 20px;
+            padding: 10px 20px 10px 20px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #3cb0fd;
+            background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+            text-decoration: none;
+        }
+
     </style>
     <script>
-        // This is the idiomatic way to ensure that JQuery does not
-        // execute until the page has loaded
-        $(function () {
-            const api = ""; // <- do not need a root api URL if this page is served directly by the API
-
-            $.getJSON(api + "/receipts", function (receipts) {
-                for (var i = 0; i < receipts.length; i++) {
-                    var receipt = receipts[i];
-                    $(`<div class="receipt">${receipt.merchantName}<div><span class="receiptTag">t1</span></div></div>`)
-                        .appendTo($("#receiptList"));
-                }
-
-            })
-        })
-
         let imageCapture;
         let track;
 
@@ -82,58 +148,166 @@
         function startVideo() {
             navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: "environment"}}})
                 .then(attachMediaStream)
-                .catch(error = > {
-                navigator.mediaDevices.getUserMedia({video: true})
-                .then(attachMediaStream)
-                .catch(error = > {
-                console.log('you are fooked');
-        })
-        })
+                .catch(error => {
+                    navigator.mediaDevices.getUserMedia({video: true})
+                        .then(attachMediaStream)
+                        .catch(error => {
+                            console.log('you are fooked');
+                        })
+                })
         }
 
         function takeSnapshot() {
             // create a CANVAS element that is same size as the image
             imageCapture.grabFrame()
-                .then(img = > {
-                const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+                .then(img => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
 
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            const base64EncodedImageData = canvas.toDataURL('image/png').split(',')[1];
-            $.ajax({
-                url: "/images",
-                type: "POST",
-                data: base64EncodedImageData,
-                contentType: "text/plain",
-                success: function () {
-                },
-            })
-                .then(response = > {
-                $('video'
-        ).
-            after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
-        })
-        .
-            always(() = > console.log('request complete')
-        )
-            ;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const base64EncodedImageData = canvas.toDataURL('image/png').split(',')[1];
+                    $.ajax({
+                        url: "/images",
+                        type: "POST",
+                        data: base64EncodedImageData,
+                        contentType: "text/plain",
+                        success: function() {},
+                    })
+                        .then(response => {
+                            $('video').after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
+                        })
+                        .always(() => console.log('request complete'));
 
-            // For debugging, you can uncomment this to see the frame that was captured
-            // $('BODY').append(canvas);
-        })
-            ;
+                    // For debugging, you can uncomment this to see the frame that was captured
+                    // $('BODY').append(canvas);
+                });
 
         }
 
 
         $(function () {
             $('#start').on('click', startVideo);
-            $('video').on('play', () = > $('#snapshot').prop('disabled', false)
-        )
-            ;
+            $('video').on('play', () => $('#snapshot').prop('disabled', false));
             $('#snapshot').on('click', takeSnapshot);
         });
+
+        // This is the idiomatic way to ensure that JQuery does not
+        // execute until the page has loaded
+        $(function () {
+            const api = ""; // <- do not need a root api URL if this page is served directly by the API
+
+            $.getJSON(api + "/receipts", function (receipts) {
+                for (var i = 0; i < receipts.length; i++) {
+                    var receipt = receipts[i];
+                    //var created = date.now()
+                    $(`<div id="${receipt.id}" class="receipt "><div class="time setclass"> ${receipt.created}</div><div class="merchant setclass">${receipt.merchantName}</div><div  class="amount setclass">${receipt.value}</div><div class="tags setclass"><button id="addtag${receipt.id}" class="add-tag">Add +</button></div></div><div>`)
+                        .appendTo($("#receiptList > #receiptListHeader"));
+                    if (receipt.tags && receipt.tags.length > 0) {
+                        receipt.tags.forEach(function (tag) {
+                            $(`<div class="tagValue btn">${tag}</div>`).insertBefore($("#addtag" + receipt.id));
+                        });
+                    }
+                    $(".add-tag").show();
+                }
+
+            });
+
+
+            $('#add-receipt').on('click', function () {
+                $('.receipt-entry').show();
+                console.log('Receipt Added');
+            });
+
+            function addReceiptToList(receipt) {
+                $(`<div id="${receipt.id}" class="receipt "><div class="time setclass"> </div><div class="merchant setclass">${receipt.merchantName}</div><div  class="amount setclass">${receipt.value}</div><div class="tags setclass"><button id="addtag${receipt.id}" class="add-tag">Add +</button></div>`)
+                    .appendTo($("#receiptList #receiptListHeader"));
+                console.log("New receipt added : " + receipt);
+                $("#addtag" + receipt.id).on('click', function () {
+                    var newTagInput = $(`<input type='text' class="tag_input">`);
+                    $(this).hide();
+                    newTagInput.insertBefore(this);
+                    newTagInput.on('keyup', function (e) {
+                        if (e.keyCode == 13) {
+                            console.log('1');
+                            var receiptId = newTagInput.parent().parent()[0].id;
+                            var newTag = $(`<div class="tagValue btn">${ $(".tag_input").val()}</div>`);
+                            console.log('2');
+                            var current = $(this);
+                            $.ajax({
+                                type: 'PUT',
+                                url: api + "/tags/" + $(".tag_input").val(),
+                                contentType: "application/json",
+                                data: JSON.stringify(receiptId),
+                                success: function (id) {
+                                    newTag.insertBefore(current);
+                                    newTagInput.remove();
+                                    $("#addtag" + receiptId).show();
+
+                                }
+                            });
+                            console.log('3');
+                        }
+                    });
+                });
+
+                $('#receiptList').on('click', '.tagValue', function () {
+                    var RemoveTag = $(this)[0].innerText.slice(0, -1);
+                    var receiptId = $(this).parent().parent()[0].id;
+                    console.log(receiptId);
+                    var cur = $(this);
+                    $.ajax({
+                        type: 'PUT',
+                        url: api + "/tags/" + $(".tag_input").val(),
+                        contentType: "application/json",
+                        data: JSON.stringify(receiptId),
+                        success: function (id) {
+                            cur.remove();
+                        }
+                    });
+
+                });
+            }
+
+
+            $('#cancel-receipt').on('click', function () {
+                $('#merchant').val('');
+                $('#amount').val('');
+                $('.receipt-entry').hide();
+                console.log('cancel clicked');
+            });
+
+
+            $('#save-receipt').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: api + "/receipts",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        merchant: $('#merchant').val(),
+                        amount: $('#amount').val()
+                    }),
+                    success: function (id) {
+                        $('.receipt-entry').hide();
+                        receipt = {
+                            "id": id,
+                            "merchantName": $("#merchant").val(),
+                            "value": $("#amount").val(),
+                            "tags": []
+                        }
+                        $('#merchant').val('');
+                        $('#amount').val('');
+                        addReceiptToList(receipt)
+
+                    }
+                });
+                console.log('Receipt Saved');
+            });
+
+
+        });
+
+
     </script>
 </head>
 
@@ -145,11 +319,24 @@
     <video autoplay></video>
 </div>
 <DIV id="container">
-    <h1>My receipts</h1>
-    <div class="button">+</div>
+    <h1>My Receipts</h1>
+    <div class="button" id="add-receipt">+</div>
+    <div class="receipt-entry">
+        <input id="merchant" placeholder="merchant"/>
+        <input id="amount" placeholder="amount"/>
+        <div class="button-panel">
+            <button id="save-receipt">Save</button>
+            <button id="cancel-receipt">Cancel</button>
+        </div>
+    </div>
     <div id="receiptList">
+        <div id="receiptListHeader">
+            <div class="time mystyle">Time</div>
+            <div class="merchant mystyle">Merchant</div>
+            <div class="amount mystyle">$</div>
+            <div class="tags mystyle">Tags</div>
+        </div>
     </div>
 </DIV>
 </body>
-
 </html>

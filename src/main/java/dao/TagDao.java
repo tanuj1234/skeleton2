@@ -27,7 +27,7 @@ public class TagDao {
                 .returning(TAGS.ID)
                 .fetchOne();
 
-        checkState(TagsRecord != null && TagsRecord.getId() != null, "Insert failed");
+        checkState(TagsRecord != null && TagsRecord.getId() != null, "Could Not Insert");
 
         return TagsRecord.getId();
     }

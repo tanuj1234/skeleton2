@@ -49,4 +49,6 @@ public class TagController {
         return receiptRecords.stream().map(ReceiptResponse::new).collect(toList());
     }
 
+
+
 }
